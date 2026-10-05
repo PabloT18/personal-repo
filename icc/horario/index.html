@@ -24,16 +24,39 @@
             font-family: Arial, Helvetica, sans-serif;
         }
 
+
+        /*
+         * Altura fija del componente.
+         * Pensada para encabezado + 5 días.
+         */
         #horario-contenedor {
             width: 100%;
+            height: 285px;
         }
 
+
+        /*
+         * --------------------------------------------------
+         * MENSAJE CUANDO NO EXISTE HORARIO
+         * --------------------------------------------------
+         */
         .mensaje {
+            width: 100%;
+            height: 100%;
+
             padding: 22px 20px;
+
             background: #f7f9fc;
+
             border: 1px solid #e3e8ef;
             border-left: 5px solid #fcc000;
             border-radius: 10px;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+
             text-align: center;
         }
 
@@ -45,21 +68,36 @@
         }
 
         .mensaje-texto {
+            max-width: 560px;
             font-size: 14px;
             color: #6b7785;
             line-height: 1.6;
         }
 
+
+        /*
+         * --------------------------------------------------
+         * TABLA DEL HORARIO
+         * --------------------------------------------------
+         */
         .tabla-contenedor {
+            width: 100%;
+            height: 100%;
+
             border: 1px solid #e3e8ef;
             border-radius: 10px;
+
             overflow: hidden;
+
             background: #ffffff;
         }
 
         table {
             width: 100%;
+            height: 100%;
+
             border-collapse: collapse;
+
             font-size: 14px;
         }
 
@@ -68,17 +106,25 @@
         }
 
         th {
-            padding: 12px 16px;
+            height: 45px;
+
+            padding: 10px 16px;
+
             font-weight: bold;
             color: #003772;
             text-align: left;
+
             border-bottom: 1px solid #e3e8ef;
         }
 
         td {
-            padding: 12px 16px;
+            height: 48px;
+
+            padding: 8px 16px;
+
             color: #2e3a46;
-            vertical-align: top;
+            vertical-align: middle;
+
             border-bottom: 1px solid #e3e8ef;
         }
 
@@ -92,20 +138,21 @@
         }
 
         .hora {
-            margin-bottom: 4px;
+            line-height: 1.4;
         }
 
-        .hora:last-child {
-            margin-bottom: 0;
+        .hora+.hora {
+            margin-top: 2px;
         }
     </style>
 </head>
+
 
 <body>
 
     <div id="horario-contenedor">
 
-        <!-- Estado inicial mientras se consulta el JSON -->
+        <!-- Estado inicial -->
         <div class="mensaje">
 
             <div class="mensaje-titulo">
@@ -128,11 +175,7 @@
 
 
         /*
-         * Ruta relativa desde:
-         *
-         * icc/horario/index.html
-         *
-         * hacia:
+         * JSON:
          *
          * icc/data/horario-atencion.json
          */
@@ -160,12 +203,13 @@
 
                 </div>
             `;
+
         }
 
 
         /*
          * --------------------------------------------------
-         * MOSTRAR TABLA
+         * MOSTRAR HORARIO
          * --------------------------------------------------
          */
         function mostrarHorario(horario) {
@@ -212,7 +256,9 @@
                     <table>
 
                         <thead>
+
                             <tr>
+
                                 <th style="width:38%;">
                                     Día
                                 </th>
@@ -220,17 +266,23 @@
                                 <th>
                                     Horario
                                 </th>
+
                             </tr>
+
                         </thead>
 
+
                         <tbody>
+
                             ${filas}
+
                         </tbody>
 
                     </table>
 
                 </div>
             `;
+
         }
 
 
@@ -262,8 +314,9 @@
 
             .then(function (datos) {
 
+
                 /*
-                 * No publicado todavía
+                 * Horario todavía no publicado
                  */
                 if (datos.publicado !== true) {
 
@@ -274,11 +327,12 @@
                     );
 
                     return;
+
                 }
 
 
                 /*
-                 * Publicado pero sin registros
+                 * Horario publicado pero sin registros
                  */
                 if (
                     !Array.isArray(datos.horario) ||
@@ -292,13 +346,16 @@
                     );
 
                     return;
+
                 }
 
 
                 /*
-                 * Mostrar horario
+                 * Horario disponible
                  */
-                mostrarHorario(datos.horario);
+                mostrarHorario(
+                    datos.horario
+                );
 
             })
 
