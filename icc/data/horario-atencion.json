@@ -1,0 +1,33 @@
+{
+    "publicado": false,
+    "periodo": "69",
+    "mensaje": "Muy pronto estará disponible el horario definitivo de atención para este periodo académico.",
+    "horario": [
+        {
+            "dia": "Lunes",
+            "horas": [
+                "09h00 a 11h00",
+                "16h00 a 18h00"
+            ]
+        },
+        {
+            "dia": "Martes",
+            "horas": [
+                "10h00 a 12h00",
+                "16h00 a 18h00"
+            ]
+        },
+        {
+            "dia": "Jueves",
+            "horas": [
+                "11h00 a 13h00"
+            ]
+        },
+        {
+            "dia": "Viernes",
+            "horas": [
+                "14h00 a 16h00"
+            ]
+        }
+    ]
+}
