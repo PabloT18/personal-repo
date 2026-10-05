@@ -1,29 +1,324 @@
-<div style="
-    font-family:Arial,Helvetica,sans-serif;
-    padding:22px 20px;
-    background:#f7f9fc;
-    border:1px solid #e3e8ef;
-    border-left:5px solid #fcc000;
-    border-radius:10px;
-    text-align:center;
-">
+<!DOCTYPE html>
+<html lang="es">
 
-    <div style="
-        font-size:15px;
-        font-weight:bold;
-        color:#003772;
-        margin-bottom:8px;
-    ">
-        Horario en preparación
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Horario de atención</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            background: transparent;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        #horario-contenedor {
+            width: 100%;
+        }
+
+        .mensaje {
+            padding: 22px 20px;
+            background: #f7f9fc;
+            border: 1px solid #e3e8ef;
+            border-left: 5px solid #fcc000;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .mensaje-titulo {
+            font-size: 15px;
+            font-weight: bold;
+            color: #003772;
+            margin-bottom: 8px;
+        }
+
+        .mensaje-texto {
+            font-size: 14px;
+            color: #6b7785;
+            line-height: 1.6;
+        }
+
+        .tabla-contenedor {
+            border: 1px solid #e3e8ef;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #ffffff;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        thead {
+            background: #eef4fa;
+        }
+
+        th {
+            padding: 12px 16px;
+            font-weight: bold;
+            color: #003772;
+            text-align: left;
+            border-bottom: 1px solid #e3e8ef;
+        }
+
+        td {
+            padding: 12px 16px;
+            color: #2e3a46;
+            vertical-align: top;
+            border-bottom: 1px solid #e3e8ef;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .dia {
+            width: 38%;
+            font-weight: bold;
+        }
+
+        .hora {
+            margin-bottom: 4px;
+        }
+
+        .hora:last-child {
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="horario-contenedor">
+
+        <!-- Estado inicial mientras se consulta el JSON -->
+        <div class="mensaje">
+
+            <div class="mensaje-titulo">
+                Consultando horario de atención
+            </div>
+
+            <div class="mensaje-texto">
+                Cargando información...
+            </div>
+
+        </div>
+
     </div>
 
-    <div style="
-        font-size:14px;
-        color:#6b7785;
-        line-height:1.6;
-    ">
-        Muy pronto estará disponible el horario definitivo
-        de atención para este periodo académico.
-    </div>
 
-</div>
+    <script>
+
+        const contenedor =
+            document.getElementById("horario-contenedor");
+
+
+        /*
+         * Ruta relativa desde:
+         *
+         * icc/horario/index.html
+         *
+         * hacia:
+         *
+         * icc/data/horario-atencion.json
+         */
+        const URL_HORARIO =
+            "../data/horario-atencion.json";
+
+
+        /*
+         * --------------------------------------------------
+         * MOSTRAR MENSAJE
+         * --------------------------------------------------
+         */
+        function mostrarMensaje(titulo, mensaje) {
+
+            contenedor.innerHTML = `
+                <div class="mensaje">
+
+                    <div class="mensaje-titulo">
+                        ${titulo}
+                    </div>
+
+                    <div class="mensaje-texto">
+                        ${mensaje}
+                    </div>
+
+                </div>
+            `;
+        }
+
+
+        /*
+         * --------------------------------------------------
+         * MOSTRAR TABLA
+         * --------------------------------------------------
+         */
+        function mostrarHorario(horario) {
+
+            let filas = "";
+
+
+            horario.forEach(function (item) {
+
+                let horas = "";
+
+
+                item.horas.forEach(function (hora) {
+
+                    horas += `
+                        <div class="hora">
+                            ${hora}
+                        </div>
+                    `;
+
+                });
+
+
+                filas += `
+                    <tr>
+
+                        <td class="dia">
+                            ${item.dia}
+                        </td>
+
+                        <td>
+                            ${horas}
+                        </td>
+
+                    </tr>
+                `;
+
+            });
+
+
+            contenedor.innerHTML = `
+                <div class="tabla-contenedor">
+
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th style="width:38%;">
+                                    Día
+                                </th>
+
+                                <th>
+                                    Horario
+                                </th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            ${filas}
+                        </tbody>
+
+                    </table>
+
+                </div>
+            `;
+        }
+
+
+        /*
+         * --------------------------------------------------
+         * CONSULTAR JSON
+         * --------------------------------------------------
+         */
+        fetch(
+            URL_HORARIO + "?v=" + Date.now(),
+            {
+                cache: "no-store"
+            }
+        )
+
+            .then(function (response) {
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "HTTP " + response.status
+                    );
+
+                }
+
+                return response.json();
+
+            })
+
+            .then(function (datos) {
+
+                /*
+                 * No publicado todavía
+                 */
+                if (datos.publicado !== true) {
+
+                    mostrarMensaje(
+                        "Horario en preparación",
+                        datos.mensaje ||
+                        "Muy pronto estará disponible el horario definitivo de atención para este periodo académico."
+                    );
+
+                    return;
+                }
+
+
+                /*
+                 * Publicado pero sin registros
+                 */
+                if (
+                    !Array.isArray(datos.horario) ||
+                    datos.horario.length === 0
+                ) {
+
+                    mostrarMensaje(
+                        "Horario en preparación",
+                        datos.mensaje ||
+                        "Muy pronto estará disponible el horario definitivo de atención para este periodo académico."
+                    );
+
+                    return;
+                }
+
+
+                /*
+                 * Mostrar horario
+                 */
+                mostrarHorario(datos.horario);
+
+            })
+
+            .catch(function (error) {
+
+                console.error(
+                    "Error al cargar horario:",
+                    error
+                );
+
+
+                mostrarMensaje(
+                    "Horario en preparación",
+                    "Muy pronto estará disponible el horario definitivo de atención para este periodo académico."
+                );
+
+            });
+
+    </script>
+
+</body>
+
+</html>
